@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
 import com.spotify.model.TopTracksUser;
 import com.spotify.R;
 
@@ -20,10 +19,15 @@ public class TopTrackAdapter extends RecyclerView.Adapter<TopTrackAdapter.TrackV
 
     private Context context;
     private List<TopTracksUser.Item> trackList;
+    private OnTrackClickListener onTrackClickListener;
+    public interface OnTrackClickListener {
+        void onTrackClick(String trackUri);
+    }
 
-    public TopTrackAdapter(Context context, List<TopTracksUser.Item> trackList) {
+    public TopTrackAdapter(Context context, List<TopTracksUser.Item> trackList, OnTrackClickListener listener) {
         this.context = context;
         this.trackList = trackList;
+        this.onTrackClickListener = listener;
     }
 
     @NonNull
@@ -44,12 +48,17 @@ public class TopTrackAdapter extends RecyclerView.Adapter<TopTrackAdapter.TrackV
         int seconds = durationInSeconds % 60;
 
         holder.trackDuration.setText(String.format("%d:%02d", minutes, seconds));
-
         holder.trackPopularity.setText("Popularity: " + track.getPopularity());
 
         Glide.with(context)
                 .load(track.getAlbum().getImages().get(0).getUrl())
                 .into(holder.trackImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onTrackClickListener != null) {
+                onTrackClickListener.onTrackClick(track.getUri());
+            }
+        });
     }
 
     @Override

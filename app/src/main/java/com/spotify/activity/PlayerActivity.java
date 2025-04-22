@@ -42,6 +42,8 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        String trackUri = getIntent().getStringExtra("TRACK_URI");
+
         buttonSkip      = findViewById(R.id.buttonSkip     );
         buttonRandom    = findViewById(R.id.buttonRandom   );
         buttonRepeat    = findViewById(R.id.buttonRepeat   );
@@ -65,21 +67,21 @@ public class PlayerActivity extends AppCompatActivity {
             finish();
         });
 
-        start();
+        start(trackUri);
     }
 
     protected void onStart() {
         super.onStart();
     }
 
-    public void start() {
+    public void start(String uriToPlay) {
         SpotifyAppRemote.connect(this, LoginActivity.connectionParams,
             new Connector.ConnectionListener() {
                 public void onConnected(SpotifyAppRemote spotifyAppRemote) {
 
                     playerService = new PlayerServiceImpl(spotifyAppRemote);
 
-                    playerService.play("spotify:playlist:6xICZD48qrN2bVbX9Yms9F?si=01869bf4ed2d4171");
+                    playerService.play(uriToPlay);
 
                     urlToImage(imageTrack);
                     trackToTextViewTrack(textTrack);

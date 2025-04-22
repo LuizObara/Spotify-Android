@@ -23,18 +23,14 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
-import com.spotify.service.PlayerService;
 import com.spotify.service.SpotifyService;
 import com.spotify.service.SpotifyServiceImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
     private RecyclerView recyclerViewPlaylist, recyclerViewTopTracks;
     private PlaylistAdapter adapterPlaylist;
     private TopTrackAdapter adapterTopTrack;
-    private FloatingActionButton buttonPlayer;
+    private FloatingActionButton buttonShare;
     User me = new User();
     Playlist playlists = new Playlist();
     TopTracksUser topTracksUser = new TopTracksUser();
@@ -54,12 +50,9 @@ public class HomeActivity extends AppCompatActivity {
         recyclerViewPlaylist.setAdapter(adapterPlaylist);
         recyclerViewTopTracks.setAdapter(adapterTopTrack);
 
-        buttonPlayer = findViewById(R.id.btnPlayer);
+        buttonShare = findViewById(R.id.btnPlayer);
 
-        buttonPlayer.setOnClickListener(v -> {
-            Intent i = new Intent(this, PlayerActivity.class);
-            startActivity(i);
-            finish();
+        buttonShare.setOnClickListener(v -> {
         });
 
         spotifyService = new SpotifyServiceImpl();
@@ -137,7 +130,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void adapterTopTracks() {
-        adapterTopTrack = new TopTrackAdapter(this, topTracksUser.getItems());
+        adapterTopTrack = new TopTrackAdapter(this, topTracksUser.getItems(), new TopTrackAdapter.OnTrackClickListener() {
+            @Override
+            public void onTrackClick(String trackUri) {
+                Log.d("TopTrackAdapter", "AAAAAAAAAAAA " + trackUri);
+                Intent intent = new Intent(HomeActivity.this, PlayerActivity.class);
+                intent.putExtra("TRACK_URI", trackUri);
+                startActivity(intent);
+            }
+        });
 
         recyclerViewTopTracks.setLayoutManager(new GridLayoutManager(this, 1));
         recyclerViewTopTracks.setAdapter(adapterTopTrack);
